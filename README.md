@@ -16,11 +16,14 @@ Cloak works best on Linux and is compatible with both python2 and python3.
 Dependencies:
 - msfvenom
 
-### Contribute
+### Contributions
+
 For now, <b>Cloak</b> can backdoor python scripts. Currently, the default connection method is <b>https</b> and Cloak creates a staged and reverse payload. So, of course the I will try to extend its capabilities which also includes bypassing lowkey AV solutions in windows.<br>
 If you like the idea, help me achieve the goals. The code is well documented so if you want to contribute you are not going to face any problems.
 Modify the code, add and improve and start a pull request.<br>
 If you find a bug in the code don't hesitate to start an issue.<br>
+
+Contributions are welcome! If you have any suggestions, bug fixes, or feature additions, please open an issue or submit a pull request.
 
 **BTC Wallet : OxfCaaF45156380eF33f078256d0Aa98f0b10F175b** my efforts and help it grow by buying me coffee - but only if you're definitely able to!
 
