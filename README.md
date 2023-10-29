@@ -9,7 +9,7 @@ To evade basic detection, Cloak breaks the payload into several parts and places
 Cloak will be further upgraded in future to support a wide range of payloads, platforms and evasion techniques.
 
 ### Demo
-<img src='[https://i.imgur.com/KJ9hTHo.png](https://github.com/BadBoy0170/Cloak/blob/main/cloak.1.png)'/>
+<img src='https://i.imgur.com/KJ9hTHo.png](https://github.com/BadBoy0170/Cloak/blob/main/cloak.1.png'/>
 
 ### Compatibility
 Cloak works best on Linux and is compatible with both python2 and python3.
