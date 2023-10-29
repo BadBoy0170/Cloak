@@ -1,4 +1,7 @@
 # Cloak
+
+[![](https://camo.githubusercontent.com/2fb0723ef80f8d87a51218680e209c66f213edf8/68747470733a2f2f666f7274686562616467652e636f6d2f696d616765732f6261646765732f6d6164652d776974682d707974686f6e2e737667)](https://python.org)
+
 <img src='https://github.com/BadBoy0170/Cloak/blob/main/cloak.png'/>
 Cloak is an intelligent python backdoor framework*.
 
@@ -16,6 +19,9 @@ Cloak works best on Linux and is compatible with both python2 and python3.
 Dependencies:
 - msfvenom
 
+## Technology used in Project :
+<img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/pandas.png" width="300">   <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/Jupyter.png" width="200">    <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/numpy.png" width="200">  
+
 ### Contributions
 
 For now, <b>Cloak</b> can backdoor python scripts. Currently, the default connection method is <b>https</b> and Cloak creates a staged and reverse payload. So, of course the I will try to extend its capabilities which also includes bypassing lowkey AV solutions in windows.<br>
@@ -28,8 +34,10 @@ Contributions are welcome! If you have any suggestions, bug fixes, or feature ad
 **BTC Wallet : OxfCaaF45156380eF33f078256d0Aa98f0b10F175b** my efforts and help it grow by buying me coffee - but only if you're definitely able to!
 
 
-### Contact Me !
+## Connect with me! 🌐
+Known on internet as **BadBoy17**
 
-[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/linkedin.png" title="LinkedIn">](www.linkedin.com/in/kunal-ranjan-166b30249)      
-[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/github.png" title="Github">](https://github.com/BadBoy0170)     
-[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/instagram-new.png" title="Instagram">](https://instagram.com/badboy__17_/) 
+[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/linkedin.png" title="LinkedIn">](www.linkedin.com/in/kunal-ranjan-166b30249)      [<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/github.png" title="Github">](https://github.com/BadBoy0170)     [<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/instagram-new.png" title="Instagram">](https://instagram.com/badboy__17_/) 
+
+## Email Me :e-mail:
+[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/secured-letter.png" title="Mail me">](mailto:Rajveershikhawat07@gmail.com)
