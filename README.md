@@ -22,12 +22,17 @@ Dependencies:
 ## Technology used in Project :
 <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/pandas.png" width="300">   <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/Jupyter.png" width="200">    <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/numpy.png" width="200">  
 
-### Contributions
+## Bug / Feature Request :
+If you find a bug (the website couldn't handle the query and / or gave undesired results), kindly open an issue [here](https://github.com/yogeshnile/Iris-Flower-Classification-using-Machine-Learning/issues/new) by including your search query and the expected result.
+
+If you'd like to request a new function, feel free to do so by opening an issue [here](https://github.com/yogeshnile/Iris-Flower-Classification-using-Machine-Learning/issues/new). Please include sample queries and their corresponding results.
 
 For now, <b>Cloak</b> can backdoor python scripts. Currently, the default connection method is <b>https</b> and Cloak creates a staged and reverse payload. So, of course the I will try to extend its capabilities which also includes bypassing lowkey AV solutions in windows.<br>
 If you like the idea, help me achieve the goals. The code is well documented so if you want to contribute you are not going to face any problems.
 Modify the code, add and improve and start a pull request.<br>
 If you find a bug in the code don't hesitate to start an issue.<br>
+
+### Contributions
 
 Contributions are welcome! If you have any suggestions, bug fixes, or feature additions, please open an issue or submit a pull request.
 
