@@ -1,5 +1,5 @@
 # Cloak
-<img src='https://i.imgur.com/m3scSAO.png' />
+<img src='https://github.com/BadBoy0170/Cloak/blob/main/cloak.png'/>
 Cloak is an intelligent python backdoor framework*.
 
 ## What it exactly does?
