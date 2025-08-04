@@ -1,48 +1,59 @@
-# Cloak
+# Cloak - Python Backdoor Framework
 
-[![](https://camo.githubusercontent.com/2fb0723ef80f8d87a51218680e209c66f213edf8/68747470733a2f2f666f7274686562616467652e636f6d2f696d616765732f6261646765732f6d6164652d776974682d707974686f6e2e737667)](https://python.org)
+Cloak is an intelligent Python backdoor injector that generates payloads via msfvenom and seamlessly injects them into target Python scripts while evading basic detection.
 
-<img src='https://github.com/BadBoy0170/Cloak/blob/main/cloak.png'/>
-Cloak is an intelligent python backdoor framework*.
+## Features
 
-## What it exactly does?
-<b>Cloak</b> generates a python payload via <b>msfvenom</b> and then intelligently injects it into the python script you specify.
+- Generates Python meterpreter payloads
+- Intelligently splits payload into multiple parts
+- Injects payload into existing Python scripts
+- Optional root execution requirement
+- GitHub repository injection support
+- Cross-version Python compatibility (Python 2 & 3)
 
-To evade basic detection, Cloak breaks the payload into several parts and places it in different places in the code. If you want the victim to run your injected script as root, Cloak can handle that too.
-Cloak will be further upgraded in future to support a wide range of payloads, platforms and evasion techniques.
+## Installation
 
-### Demo
-<img src='https://i.imgur.com/KJ9hTHo.png](https://github.com/BadBoy0170/Cloak/blob/main/cloak.1.png'/>
+1. Ensure you have `msfvenom` installed (part of Metasploit Framework)
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/cloak.git
+   cd cloak
+   ```
 
-### Compatibility
-Cloak works best on Linux and is compatible with both python2 and python3.
-Dependencies:
-- msfvenom
+## Usage
 
-## Technology used in Project :
-<img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/pandas.png" width="300">   <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/Jupyter.png" width="200">    <img target="_blank" src="https://github.com/yogeshnile/technology/blob/master/numpy.png" width="200">  
+```bash
+python cloak.py
+```
 
-## Bug / Feature Request :
-If you find a bug (the website couldn't handle the query and / or gave undesired results), kindly open an issue [here](https://github.com/BadBoy0170/Cloak/issues) by including your search query and the expected result.
+Follow the interactive prompts to:
 
-If you'd like to request a new function, feel free to do so by opening an issue [here](https://github.com/BadBoy0170/Cloak/issues). Please include sample queries and their corresponding results.
+- Specify target (GitHub repo or local file)
+- Set LHOST/LPORT (defaults to detected IP and port 443)
+- Choose whether to require root execution
 
-For now, <b>Cloak</b> can backdoor python scripts. Currently, the default connection method is <b>https</b> and Cloak creates a staged and reverse payload. So, of course the I will try to extend its capabilities which also includes bypassing lowkey AV solutions in windows.<br>
-If you like the idea, help me achieve the goals. The code is well documented so if you want to contribute you are not going to face any problems.
-Modify the code, add and improve and start a pull request.<br>
-If you find a bug in the code don't hesitate to start an issue.<br>
+## Requirements
 
-### Contributions
+- Linux (recommended)
+- Python 2.7 or 3.x
+- msfvenom (Metasploit Framework)
 
-Contributions are welcome! If you have any suggestions, bug fixes, or feature additions, please open an issue or submit a pull request.
+## Compatibility
 
-**BTC Wallet : OxfCaaF45156380eF33f078256d0Aa98f0b10F175b** my efforts and help it grow by buying me coffee - but only if you're definitely able to!
+Tested on:
 
+- Kali Linux
+- Ubuntu
+- Other Debian-based distributions
 
-## Connect with me! 🌐
-Known on internet as **BadBoy17**
+## Disclaimer
 
-[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/linkedin.png" title="LinkedIn">](www.linkedin.com/in/kunal-ranjan-166b30249)      [<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/github.png" title="Github">](https://github.com/BadBoy0170)     [<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/instagram-new.png" title="Instagram">](https://instagram.com/badboy__17_/) 
+This tool is for educational and authorized penetration testing purposes only. The developers assume no liability and are not responsible for any misuse or damage caused by this program.
 
-## Email Me :
-[<img target="_blank" src="https://img.icons8.com/bubbles/100/000000/secured-letter.png" title="Mail me">](mailto:Rajveershikhawat07@gmail.com)
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
